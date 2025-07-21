@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora - DJEN</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f7f9; color: #333; line-height: 1.6; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; flex-direction: column; }
+        .container { background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); width: 100%; max-width: 700px; margin-bottom: 20px; }
+        h2 { color: #0056b3; border-bottom: 2px solid #e9ecef; padding-bottom: 10px; margin-top: 0; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; color: #555; }
+        input[type="date"], input[type="number"], select { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 5px; box-sizing: border-box; font-size: 16px; transition: border-color 0.2s; }
+        input[type="date"]:focus, input[type="number"]:focus, select:focus { border-color: #0056b3; outline: none; }
+        button { background-color: #0056b3; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: background-color 0.2s; }
+        button:hover { background-color: #004494; }
+        .result { margin-top: 20px; padding: 15px; background-color: #e9f5ff; border-left: 5px solid #0056b3; border-radius: 5px; font-size: 1.1em; display: none; }
+        .result.error { background-color: #fff0f0; border-left-color: #d9534f; }
+        .back-button { display: inline-block; margin-top: 20px; background-color: #6c757d; color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; transition: background-color 0.2s; }
+        .back-button:hover { background-color: #5a6268; }
+        .info-link { display: none; margin-top: 15px; padding: 10px; background-color: #e6f7ff; border: 1px solid #91d5ff; border-radius: 5px; text-align: center; }
+        footer { text-align: center; font-size: 0.9em; color: #777; margin-top: 20px; }
+        footer a { color: #0056b3; text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+
+        /* Estilos do Modal de Confirmação */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); text-align: center; max-width: 450px; width: 90%; z-index: 1001; }
+        .modal-content h3 { margin-top: 0; color: #0056b3; }
+        .modal-content p { margin-bottom: 25px; color: #555; }
+        .modal-buttons { display: flex; justify-content: flex-end; gap: 10px; }
+        .modal-button { padding: 10px 20px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; transition: background-color 0.2s; }
+        #modal-confirm { background-color: #0056b3; color: white; }
+        #modal-confirm:hover { background-color: #004494; }
+        #modal-cancel { background-color: #6c757d; color: white; }
+        #modal-cancel:hover { background-color: #5a6268; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Diário de Justiça Eletrônico Nacional (DJEN)</h2>
+        <form id="form-djen">
+            <div class="form-group">
+                <label for="djen-data-disponibilizacao">Data da Disponibilização no Sistema:</label>
+                <input type="date" id="djen-data-disponibilizacao" required>
+            </div>
+            <div class="form-group">
+                <label for="djen-prazo-dias">Prazo em dias úteis:</label>
+                <input type="number" id="djen-prazo-dias" min="1" placeholder="Ex: 15" required>
+            </div>
+            <div class="form-group">
+                <label for="estado-uf">Estado (para feriados locais):</label>
+                <select id="estado-uf">
+                    <option value="">Nenhum (apenas feriados nacionais)</option>
+                    <option value="AC">Acre</option><option value="AL">Alagoas</option><option value="AP">Amapá</option><option value="AM">Amazonas</option><option value="BA">Bahia</option><option value="CE">Ceará</option><option value="DF">Distrito Federal</option><option value="ES">Espírito Santo</option><option value="GO">Goiás</option><option value="MA" selected>Maranhão</option><option value="MT">Mato Grosso</option><option value="MS">Mato Grosso do Sul</option><option value="MG">Minas Gerais</option><option value="PA">Pará</option><option value="PB">Paraíba</option><option value="PR">Paraná</option><option value="PE">Pernambuco</option><option value="PI">Piauí</option><option value="RJ">Rio de Janeiro</option><option value="RN">Rio Grande do Norte</option><option value="RS">Rio Grande do Sul</option><option value="RO">Rondônia</option><option value="RR">Roraima</option><option value="SC">Santa Catarina</option><option value="SP">São Paulo</option><option value="SE">Sergipe</option><option value="TO">Tocantins</option>
+                </select>
+            </div>
+            <button type="submit">Calcular Prazo</button>
+        </form>
+        <div id="resultado-djen" class="result"></div>
+        <div id="link-tjma-djen" class="info-link"></div>
+        <a href="index.html" class="back-button">↩ Voltar</a>
+    </div>
+
+    <!-- Estrutura do Modal -->
+    <div id="modal-disclaimer" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Atenção</h3>
+            <p>Esta calculadora é uma ferramenta de auxílio e pode conter imprecisões. Feriados locais (municipais) não são considerados. Verifique sempre o calendário oficial do tribunal correspondente antes de confiar no resultado.</p>
+            <div class="modal-buttons">
+                <button id="modal-cancel" class="modal-button">Cancelar</button>
+                <button id="modal-confirm" class="modal-button">Continuar</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Todos os direitos reservados Mateus Maia &copy; 2025
+        <br>
+        <a href="https://www.instagram.com/mateusmaiaadv/" target="_blank" rel="noopener noreferrer">@mateusmaiaadv</a>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Feriados Nacionais Fixos de 2025 (Fonte: gov.br) ---
+            const feriadosNacionaisFixos2025 = [
+                "2025-01-01", // Confraternização Universal
+                "2025-03-03", // Carnaval
+                "2025-03-04", // Carnaval
+                "2025-03-05", // Quarta-feira de Cinzas
+                "2025-04-18", // Paixão de Cristo
+                "2025-04-21", // Tiradentes
+                "2025-05-01", // Dia do Trabalho
+                "2025-06-19", // Corpus Christi
+                "2025-09-07", // Independência do Brasil
+                "2025-10-12", // Nossa Senhora Aparecida
+                "2025-11-02", // Finados
+                "2025-11-15", // Proclamação da República
+                "2025-11-20", // Dia da Consciência Negra
+                "2025-12-25"  // Natal
+            ];
+
+            // --- Feriados e Recessos Específicos do TJMA para 2025 (Resolução-GP Nº 120/2024) ---
+            const feriadosTJMA2025 = [
+                "2025-07-28", // Adesão do Maranhão à Independência
+                "2025-10-15", // Dia do Professor (ponto facultativo)
+                "2025-10-28", // Dia do Servidor Público
+                "2025-12-08", // Dia da Justiça
+                "2025-12-24", // Véspera de Natal (ponto facultativo)
+                "2025-12-31"  // Véspera de Ano Novo (ponto facultativo)
+            ];
+
+            // Função para gerar datas de um intervalo (para recesso/suspensão)
+            const getDatesInRange = (startDate, endDate) => {
+                const dates = [];
+                let currentDate = new Date(startDate.valueOf() + startDate.getTimezoneOffset() * 60 * 1000);
+                const lastDate = new Date(endDate.valueOf() + endDate.getTimezoneOffset() * 60 * 1000);
+                while (currentDate <= lastDate) {
+                    dates.push(currentDate.toISOString().split('T')[0]);
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
+                return dates;
+            };
+
+            // Adiciona o recesso forense e a suspensão de prazos do TJMA
+            const recessoTJMA2025_2026 = getDatesInRange(new Date("2025-12-20"), new Date("2026-01-20"));
+
+            // --- Funções Auxiliares de Data e Feriados ---
+            async function getHolidays(year, uf) {
+                let holidays = (year === 2025) ? [...feriadosNacionaisFixos2025] : [];
+                
+                if (uf === 'MA' && year === 2025) {
+                    holidays = holidays.concat(feriadosTJMA2025, recessoTJMA2025_2026);
+                } else if (uf) {
+                    try {
+                        const stateRes = await fetch(`https://brasilapi.com.br/api/feriados/v1/${year}?state=${uf}`);
+                        if (stateRes.ok) {
+                            const stateData = await stateRes.json();
+                            holidays = holidays.concat(stateData.map(h => h.date));
+                        }
+                    } catch (error) {
+                        console.error("Erro ao buscar feriados estaduais:", error);
+                        alert("Aviso: Não foi possível carregar feriados estaduais. O cálculo usará apenas feriados nacionais e do TJMA (se aplicável).");
+                    }
+                }
+                return [...new Set(holidays)];
+            }
+
+            const isBusinessDay = (d, holidays) => { const day = d.getDay(); if (day === 0 || day === 6) return false; const dStr = d.toISOString().split('T')[0]; return !holidays.includes(dStr); };
+            const findNextBusinessDay = (d, holidays) => { const n = new Date(d); n.setDate(n.getDate() + 1); while (!isBusinessDay(n, holidays)) { n.setDate(n.getDate() + 1); } return n; };
+            const addBusinessDays = (s, days, holidays) => { let c = new Date(s); let a = 0; while (a < days) { c.setDate(c.getDate() + 1); if (isBusinessDay(c, holidays)) { a++; } } return c; };
+            const formatDate = (d) => { const a = new Date(d.valueOf() + d.getTimezoneOffset() * 60 * 1000); return a.toLocaleDateString('pt-BR'); };
+
+            // --- Lógica do Modal ---
+            const modal = document.getElementById('modal-disclaimer');
+            const btnCancel = document.getElementById('modal-cancel');
+            const btnConfirm = document.getElementById('modal-confirm');
+            btnCancel.onclick = () => { modal.style.display = 'none'; };
+            btnConfirm.onclick = () => { modal.style.display = 'none'; proceedWithCalculation(); };
+
+            // --- Lógica da Calculadora ---
+            const formDJEN = document.getElementById('form-djen');
+            const resultadoDJEN = document.getElementById('resultado-djen');
+            const linkTjma = document.getElementById('link-tjma-djen');
+
+            formDJEN.addEventListener('submit', (e) => {
+                e.preventDefault();
+                modal.style.display = 'flex';
+            });
+
+            async function proceedWithCalculation() {
+                const dataDisponibilizacaoInput = document.getElementById('djen-data-disponibilizacao').value;
+                const prazoDias = parseInt(document.getElementById('djen-prazo-dias').value, 10);
+                const uf = document.getElementById('estado-uf').value;
+
+                if (!dataDisponibilizacaoInput || !prazoDias) {
+                    resultadoDJEN.innerHTML = 'Por favor, preencha todos os campos.';
+                    resultadoDJEN.className = 'result error';
+                    resultadoDJEN.style.display = 'block';
+                    linkTjma.style.display = 'none';
+                    return;
+                }
+                
+                const dataDisponibilizacao = new Date(`${dataDisponibilizacaoInput}T12:00:00`);
+                const ano = dataDisponibilizacao.getFullYear();
+                const holidays = await getHolidays(ano, uf);
+
+                const dataPublicacao = findNextBusinessDay(dataDisponibilizacao, holidays);
+                const inicioPrazo = findNextBusinessDay(dataPublicacao, holidays);
+                const dataFinal = addBusinessDays(inicioPrazo, prazoDias - 1, holidays);
+
+                resultadoDJEN.innerHTML = `<strong>Data da Publicação (considerada):</strong> ${formatDate(dataPublicacao)}<br><strong>Início do Prazo:</strong> ${formatDate(inicioPrazo)}<br><strong>Fim do Prazo:</strong> ${formatDate(dataFinal)}`;
+                resultadoDJEN.className = 'result';
+                resultadoDJEN.style.display = 'block';
+
+                if (uf === 'MA') {
+                    linkTjma.innerHTML = 'Cálculo baseado na Resolução-GP Nº 120/2024 do TJMA. <a href="https://novogerenciador.tjma.jus.br/storage/arquivos/ascom_tjma/resolucao_gp_n_120_de_8_de_novembro_de_2024_12_11_2024_18_05_45.pdf" target="_blank" rel="noopener noreferrer">Consulte o calendário oficial</a>.';
+                    linkTjma.style.display = 'block';
+                } else {
+                    linkTjma.style.display = 'none';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
