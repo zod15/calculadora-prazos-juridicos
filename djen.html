@@ -116,18 +116,27 @@
             const formatDate = (d) => { const a = new Date(d.valueOf() + d.getTimezoneOffset() * 60 * 1000); return a.toLocaleDateString('pt-BR'); };
             const formatDateWithWeekday = (d) => { const a = new Date(d.valueOf() + d.getTimezoneOffset() * 60 * 1000); return `${a.toLocaleDateString('pt-BR')} (${diasDaSemana[a.getDay()]})`; };
 
-            // NOVA FUNÇÃO COM LOG
+            // FUNÇÃO DE CONTAGEM CORRIGIDA
             const addBusinessDaysWithLog = (start, days, holidays) => {
                 let log = [];
                 let currentDate = new Date(start);
                 let daysAdded = 0;
-                while (daysAdded < days) {
+                let dayCounter = 0; // Contador para os dias do prazo
+                
+                // O início do prazo é o dia 1.
+                dayCounter++;
+                let logEntry = `<li>${formatDateWithWeekday(currentDate)} - <strong>Dia ${dayCounter}</strong>`;
+                if (dayCounter === days) logEntry += " <strong>(Fim do Prazo)</strong>";
+                logEntry += "</li>";
+                log.push(logEntry);
+
+                while (dayCounter < days) {
                     currentDate.setDate(currentDate.getDate() + 1);
                     const currentDateStr = currentDate.toISOString().split('T')[0];
                     if (isBusinessDay(currentDate, holidays)) {
-                        daysAdded++;
-                        let logEntry = `<li>${formatDateWithWeekday(currentDate)} - <strong>Dia ${daysAdded}</strong>`;
-                        if (daysAdded === days) logEntry += " <strong>(Fim do Prazo)</strong>";
+                        dayCounter++;
+                        logEntry = `<li>${formatDateWithWeekday(currentDate)} - <strong>Dia ${dayCounter}</strong>`;
+                        if (dayCounter === days) logEntry += " <strong>(Fim do Prazo)</strong>";
                         logEntry += "</li>";
                         log.push(logEntry);
                     } else {
@@ -178,8 +187,8 @@
                 const dataPublicacao = findNextBusinessDay(dataDisponibilizacao, holidays);
                 const inicioPrazo = findNextBusinessDay(dataPublicacao, holidays);
                 
-                // Usar a nova função com log
-                const calculo = addBusinessDaysWithLog(inicioPrazo, prazoDias - 1, holidays);
+                // CORREÇÃO APLICADA AQUI: removido o "- 1"
+                const calculo = addBusinessDaysWithLog(inicioPrazo, prazoDias, holidays);
                 const dataFinal = calculo.finalDate;
 
                 // Exibir resultado principal
