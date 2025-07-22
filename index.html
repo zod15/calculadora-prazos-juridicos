@@ -3,76 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Prazos Processuais</title>
+    <title>Calculadoras Jurídicas</title>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f7f9;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            flex-direction: column;
-        }
-        .container {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 600px;
-            text-align: center;
-        }
-        h1 {
-            color: #0056b3;
-            margin-top: 0;
-            margin-bottom: 30px;
-        }
-        .nav-button {
-            display: block;
-            background-color: #0056b3;
-            color: white;
-            padding: 15px 20px;
-            margin-bottom: 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 18px;
-            font-weight: bold;
-            text-decoration: none;
-            transition: background-color 0.2s;
-        }
-        .nav-button:hover {
-            background-color: #004494;
-        }
-        footer {
-            text-align: center;
-            font-size: 0.9em;
-            color: #777;
-            margin-top: 30px;
-        }
-        footer a {
-            color: #0056b3;
-            text-decoration: none;
-        }
-        footer a:hover {
-            text-decoration: underline;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f7f9; color: #333; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background-color: #ffffff; padding: 40px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); text-align: center; width: 100%; max-width: 500px; }
+        h1 { color: #0056b3; margin-top: 0; margin-bottom: 30px; }
+        .menu-button { display: block; background-color: #0056b3; color: white; padding: 15px 20px; margin: 15px 0; border: none; border-radius: 5px; cursor: pointer; font-size: 18px; text-decoration: none; width: 100%; box-sizing: border-box; transition: background-color 0.2s, transform 0.1s; }
+        .menu-button:hover { background-color: #004494; transform: translateY(-2px); }
+        .menu-button.disabled { background-color: #a9cce3; cursor: not-allowed; }
+        .menu-button.disabled:hover { background-color: #a9cce3; transform: none; }
+        footer { text-align: center; font-size: 0.9em; color: #777; margin-top: 30px; line-height: 1.5; }
+        footer a { color: #0056b3; text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+
+        /* Estilos do Modal "Em Construção" */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); text-align: center; max-width: 450px; width: 90%; z-index: 1001; }
+        .modal-content h3 { margin-top: 0; color: #e67e22; }
+        .modal-content p { margin-bottom: 25px; color: #555; }
+        .modal-buttons { display: flex; flex-direction: column; gap: 10px; }
+        .modal-button { padding: 12px 20px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; text-decoration: none; transition: background-color 0.2s; }
+        #modal-redirect { background-color: #0056b3; color: white; }
+        #modal-redirect:hover { background-color: #004494; }
+        #modal-close { background-color: #6c757d; color: white; }
+        #modal-close:hover { background-color: #5a6268; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Calculadora de Prazos Processuais</h1>
-        <a href="dje.html" class="nav-button">Domicílio Judicial Eletrônico</a>
-        <a href="djen.html" class="nav-button">Diário de Justiça Eletrônico Nacional (DJEN)</a>
+        <h1>Calculadoras Jurídicas</h1>
+        <a href="djen.html" class="menu-button">Diário de Justiça Eletrônico Nacional (DJEN)</a>
+        <button id="btn-domicilio" class="menu-button disabled">Domicílio Judicial Eletrônico</button>
+        
+        <footer>
+            Copyright &copy; 2025 Mateus Maia | 
+            <a href="https://www.instagram.com/mateusmaiaadv/" target="_blank" rel="noopener noreferrer">Instagram</a> | 
+            <a href="https://tinyurl.com/4d5xe7hb" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        </footer>
     </div>
-    <footer>
-        Todos os direitos reservados Mateus Maia &copy; 2025
-        <br>
-        <a href="https://www.instagram.com/mateusmaiaadv/" target="_blank" rel="noopener noreferrer">@mateusmaiaadv</a>
-    </footer>
+
+    <!-- Estrutura do Modal "Em Construção" -->
+    <div id="modal-construcao" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Em Construção</h3>
+            <p>Esta funcionalidade ainda está em desenvolvimento. Por favor, aguarde.</p>
+            <p>Se adequado, utilize a calculadora para o <strong>DJEN</strong>, que já está disponível.</p>
+            <div class="modal-buttons">
+                <a href="djen.html" id="modal-redirect" class="modal-button">Ir para Calculadora DJEN</a>
+                <button id="modal-close" class="modal-button">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnDomicilio = document.getElementById('btn-domicilio');
+            const modal = document.getElementById('modal-construcao');
+            const btnClose = document.getElementById('modal-close');
+
+            // Abre o modal ao clicar no botão "Domicílio"
+            btnDomicilio.addEventListener('click', (e) => {
+                e.preventDefault(); // Previne qualquer comportamento padrão do botão
+                modal.style.display = 'flex';
+            });
+
+            // Fecha o modal ao clicar no botão "Fechar"
+            btnClose.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+
+            // Fecha o modal ao clicar fora da caixa de diálogo
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+    </script>
 </body>
 </html>
