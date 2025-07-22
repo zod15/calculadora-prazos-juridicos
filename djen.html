@@ -19,7 +19,17 @@
         .back-button { display: inline-block; margin-top: 20px; background-color: #6c757d; color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; transition: background-color 0.2s; }
         .back-button:hover { background-color: #5a6268; }
         .info-link { display: none; margin-top: 15px; padding: 10px; background-color: #e6f7ff; border: 1px solid #91d5ff; border-radius: 5px; text-align: center; }
-        footer { text-align: center; font-size: 0.9em; color: #777; margin-top: 20px; }
+        
+        /* Estilos para o detalhamento do cálculo */
+        #btn-ver-calculo { background: none; border: 1px solid #0056b3; color: #0056b3; font-weight: normal; margin-top: 15px; padding: 8px 15px; display: none; }
+        #btn-ver-calculo:hover { background-color: #e9f5ff; }
+        #explicacao-calculo { display: none; margin-top: 15px; padding: 15px; background-color: #fafafa; border: 1px solid #e0e0e0; border-radius: 5px; font-size: 0.95em; }
+        #explicacao-calculo h4 { margin-top: 0; color: #0056b3; }
+        #explicacao-calculo ul { padding-left: 20px; margin: 0; }
+        #explicacao-calculo li { margin-bottom: 5px; }
+        #explicacao-calculo .ignorado { color: #888; font-style: italic; }
+
+        footer { text-align: center; font-size: 0.9em; color: #777; margin-top: 20px; line-height: 1.5; }
         footer a { color: #0056b3; text-decoration: none; }
         footer a:hover { text-decoration: underline; }
 
@@ -58,6 +68,8 @@
             <button type="submit">Calcular Prazo</button>
         </form>
         <div id="resultado-djen" class="result"></div>
+        <button id="btn-ver-calculo">Ver detalhes do cálculo</button>
+        <div id="explicacao-calculo"></div>
         <div id="link-tjma-djen" class="info-link"></div>
         <a href="index.html" class="back-button">↩ Voltar</a>
     </div>
@@ -75,97 +87,73 @@
     </div>
 
     <footer>
-        Todos os direitos reservados Mateus Maia &copy; 2025
-        <br>
-        <a href="https://www.instagram.com/mateusmaiaadv/" target="_blank" rel="noopener noreferrer">@mateusmaiaadv</a>
+        Copyright &copy; 2025 Mateus Maia | 
+        <a href="https://www.instagram.com/mateusmaiaadv/" target="_blank" rel="noopener noreferrer">Instagram</a> | 
+        <a href="https://tinyurl.com/4d5xe7hb" target="_blank" rel="noopener noreferrer">WhatsApp</a>
     </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // --- Feriados Nacionais Fixos de 2025 (Fonte: gov.br) ---
-            const feriadosNacionaisFixos2025 = [
-                "2025-01-01", // Confraternização Universal
-                "2025-03-03", // Carnaval
-                "2025-03-04", // Carnaval
-                "2025-03-05", // Quarta-feira de Cinzas
-                "2025-04-18", // Paixão de Cristo
-                "2025-04-21", // Tiradentes
-                "2025-05-01", // Dia do Trabalho
-                "2025-06-19", // Corpus Christi
-                "2025-09-07", // Independência do Brasil
-                "2025-10-12", // Nossa Senhora Aparecida
-                "2025-11-02", // Finados
-                "2025-11-15", // Proclamação da República
-                "2025-11-20", // Dia da Consciência Negra
-                "2025-12-25"  // Natal
-            ];
-
+            const feriadosNacionaisFixos2025 = [ "2025-01-01", "2025-03-03", "2025-03-04", "2025-03-05", "2025-04-18", "2025-04-21", "2025-05-01", "2025-06-19", "2025-09-07", "2025-10-12", "2025-11-02", "2025-11-15", "2025-11-20", "2025-12-25" ];
             // --- Feriados e Recessos Específicos do TJMA para 2025 (Resolução-GP Nº 120/2024) ---
-            const feriadosTJMA2025 = [
-                "2025-07-28", // Adesão do Maranhão à Independência
-                "2025-10-15", // Dia do Professor (ponto facultativo)
-                "2025-10-28", // Dia do Servidor Público
-                "2025-12-08", // Dia da Justiça
-                "2025-12-24", // Véspera de Natal (ponto facultativo)
-                "2025-12-31"  // Véspera de Ano Novo (ponto facultativo)
-            ];
-
-            // Função para gerar datas de um intervalo (para recesso/suspensão)
-            const getDatesInRange = (startDate, endDate) => {
-                const dates = [];
-                let currentDate = new Date(startDate.valueOf() + startDate.getTimezoneOffset() * 60 * 1000);
-                const lastDate = new Date(endDate.valueOf() + endDate.getTimezoneOffset() * 60 * 1000);
-                while (currentDate <= lastDate) {
-                    dates.push(currentDate.toISOString().split('T')[0]);
-                    currentDate.setDate(currentDate.getDate() + 1);
-                }
-                return dates;
-            };
-
-            // Adiciona o recesso forense e a suspensão de prazos do TJMA
+            const feriadosTJMA2025 = [ "2025-07-28", "2025-10-15", "2025-10-28", "2025-12-08", "2025-12-24", "2025-12-31" ];
+            const getDatesInRange = (s, e) => { const d = []; let c = new Date(s.valueOf() + s.getTimezoneOffset() * 60 * 1000); const l = new Date(e.valueOf() + e.getTimezoneOffset() * 60 * 1000); while (c <= l) { d.push(c.toISOString().split('T')[0]); c.setDate(c.getDate() + 1); } return d; };
             const recessoTJMA2025_2026 = getDatesInRange(new Date("2025-12-20"), new Date("2026-01-20"));
 
             // --- Funções Auxiliares de Data e Feriados ---
             async function getHolidays(year, uf) {
                 let holidays = (year === 2025) ? [...feriadosNacionaisFixos2025] : [];
-                
-                if (uf === 'MA' && year === 2025) {
-                    holidays = holidays.concat(feriadosTJMA2025, recessoTJMA2025_2026);
-                } else if (uf) {
-                    try {
-                        const stateRes = await fetch(`https://brasilapi.com.br/api/feriados/v1/${year}?state=${uf}`);
-                        if (stateRes.ok) {
-                            const stateData = await stateRes.json();
-                            holidays = holidays.concat(stateData.map(h => h.date));
-                        }
-                    } catch (error) {
-                        console.error("Erro ao buscar feriados estaduais:", error);
-                        alert("Aviso: Não foi possível carregar feriados estaduais. O cálculo usará apenas feriados nacionais e do TJMA (se aplicável).");
-                    }
-                }
+                if (uf === 'MA' && year === 2025) { holidays = holidays.concat(feriadosTJMA2025, recessoTJMA2025_2026); }
+                else if (uf) { try { const res = await fetch(`https://brasilapi.com.br/api/feriados/v1/${year}?state=${uf}`); if (res.ok) { const data = await res.json(); holidays = holidays.concat(data.map(h => h.date)); } } catch (e) { console.error("Erro ao buscar feriados estaduais:", e); alert("Aviso: Não foi possível carregar feriados estaduais."); } }
                 return [...new Set(holidays)];
             }
 
+            const diasDaSemana = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
+            const getHolidayReason = (dStr, holidays) => { return holidays.includes(dStr) ? "Feriado/Recesso" : "Fim de semana"; };
             const isBusinessDay = (d, holidays) => { const day = d.getDay(); if (day === 0 || day === 6) return false; const dStr = d.toISOString().split('T')[0]; return !holidays.includes(dStr); };
             const findNextBusinessDay = (d, holidays) => { const n = new Date(d); n.setDate(n.getDate() + 1); while (!isBusinessDay(n, holidays)) { n.setDate(n.getDate() + 1); } return n; };
-            const addBusinessDays = (s, days, holidays) => { let c = new Date(s); let a = 0; while (a < days) { c.setDate(c.getDate() + 1); if (isBusinessDay(c, holidays)) { a++; } } return c; };
             const formatDate = (d) => { const a = new Date(d.valueOf() + d.getTimezoneOffset() * 60 * 1000); return a.toLocaleDateString('pt-BR'); };
+            const formatDateWithWeekday = (d) => { const a = new Date(d.valueOf() + d.getTimezoneOffset() * 60 * 1000); return `${a.toLocaleDateString('pt-BR')} (${diasDaSemana[a.getDay()]})`; };
 
-            // --- Lógica do Modal ---
+            // NOVA FUNÇÃO COM LOG
+            const addBusinessDaysWithLog = (start, days, holidays) => {
+                let log = [];
+                let currentDate = new Date(start);
+                let daysAdded = 0;
+                while (daysAdded < days) {
+                    currentDate.setDate(currentDate.getDate() + 1);
+                    const currentDateStr = currentDate.toISOString().split('T')[0];
+                    if (isBusinessDay(currentDate, holidays)) {
+                        daysAdded++;
+                        let logEntry = `<li>${formatDateWithWeekday(currentDate)} - <strong>Dia ${daysAdded}</strong>`;
+                        if (daysAdded === days) logEntry += " <strong>(Fim do Prazo)</strong>";
+                        logEntry += "</li>";
+                        log.push(logEntry);
+                    } else {
+                        log.push(`<li class="ignorado">${formatDateWithWeekday(currentDate)} - <em>Ignorado (${getHolidayReason(currentDateStr, holidays)})</em></li>`);
+                    }
+                }
+                return { finalDate: currentDate, log: log };
+            };
+
+            // --- Lógica do Modal e da Calculadora ---
             const modal = document.getElementById('modal-disclaimer');
             const btnCancel = document.getElementById('modal-cancel');
             const btnConfirm = document.getElementById('modal-confirm');
-            btnCancel.onclick = () => { modal.style.display = 'none'; };
-            btnConfirm.onclick = () => { modal.style.display = 'none'; proceedWithCalculation(); };
-
-            // --- Lógica da Calculadora ---
             const formDJEN = document.getElementById('form-djen');
             const resultadoDJEN = document.getElementById('resultado-djen');
             const linkTjma = document.getElementById('link-tjma-djen');
+            const btnVerCalculo = document.getElementById('btn-ver-calculo');
+            const explicacaoCalculo = document.getElementById('explicacao-calculo');
 
-            formDJEN.addEventListener('submit', (e) => {
-                e.preventDefault();
-                modal.style.display = 'flex';
+            btnCancel.onclick = () => { modal.style.display = 'none'; };
+            btnConfirm.onclick = () => { modal.style.display = 'none'; proceedWithCalculation(); };
+            formDJEN.addEventListener('submit', (e) => { e.preventDefault(); modal.style.display = 'flex'; });
+            btnVerCalculo.addEventListener('click', () => {
+                const isVisible = explicacaoCalculo.style.display === 'block';
+                explicacaoCalculo.style.display = isVisible ? 'none' : 'block';
+                btnVerCalculo.textContent = isVisible ? 'Ver detalhes do cálculo' : 'Ocultar detalhes do cálculo';
             });
 
             async function proceedWithCalculation() {
@@ -178,6 +166,8 @@
                     resultadoDJEN.className = 'result error';
                     resultadoDJEN.style.display = 'block';
                     linkTjma.style.display = 'none';
+                    btnVerCalculo.style.display = 'none';
+                    explicacaoCalculo.style.display = 'none';
                     return;
                 }
                 
@@ -187,14 +177,34 @@
 
                 const dataPublicacao = findNextBusinessDay(dataDisponibilizacao, holidays);
                 const inicioPrazo = findNextBusinessDay(dataPublicacao, holidays);
-                const dataFinal = addBusinessDays(inicioPrazo, prazoDias - 1, holidays);
+                
+                // Usar a nova função com log
+                const calculo = addBusinessDaysWithLog(inicioPrazo, prazoDias - 1, holidays);
+                const dataFinal = calculo.finalDate;
 
+                // Exibir resultado principal
                 resultadoDJEN.innerHTML = `<strong>Data da Publicação (considerada):</strong> ${formatDate(dataPublicacao)}<br><strong>Início do Prazo:</strong> ${formatDate(inicioPrazo)}<br><strong>Fim do Prazo:</strong> ${formatDate(dataFinal)}`;
                 resultadoDJEN.className = 'result';
                 resultadoDJEN.style.display = 'block';
 
+                // Preparar e exibir o detalhamento
+                let explicacaoHTML = `<h4>Detalhes do Cálculo</h4>
+                    <ul>
+                        <li><strong>Data de Disponibilização:</strong> ${formatDateWithWeekday(dataDisponibilizacao)}</li>
+                        <li><strong>Data da Publicação:</strong> ${formatDateWithWeekday(dataPublicacao)} - <em>1º dia útil após disponibilização.</em></li>
+                        <li><strong>Início do Prazo:</strong> ${formatDateWithWeekday(inicioPrazo)} - <em>1º dia útil após publicação.</em></li>
+                    </ul>
+                    <p><strong>Contagem dos ${prazoDias} dias úteis:</strong></p>
+                    <ul>${calculo.log.join('')}</ul>`;
+                
+                explicacaoCalculo.innerHTML = explicacaoHTML;
+                btnVerCalculo.style.display = 'block';
+                btnVerCalculo.textContent = 'Ver detalhes do cálculo';
+                explicacaoCalculo.style.display = 'none'; // Começa oculto
+
+                // Link do TJMA
                 if (uf === 'MA') {
-                    linkTjma.innerHTML = 'Cálculo baseado na Resolução-GP Nº 120/2024 do TJMA. <a href="https://novogerenciador.tjma.jus.br/storage/arquivos/ascom_tjma/resolucao_gp_n_120_de_8_de_novembro_de_2024_12_11_2024_18_05_45.pdf" target="_blank" rel="noopener noreferrer">Consulte o calendário oficial</a>.';
+                    linkTjma.innerHTML = 'Cálculo baseado nos feriados do TJMA. <a href="https://mateusmaiaadvocacia.blogspot.com/2025/01/feriados-e-pontos-facultativos-do-poder.html" target="_blank" rel="noopener noreferrer">Consulte o calendário detalhado aqui</a>.';
                     linkTjma.style.display = 'block';
                 } else {
                     linkTjma.style.display = 'none';
