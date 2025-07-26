@@ -3,99 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora - DJEN</title>
+    <title>Calculadoras Jurídicas</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f7f9; color: #333; line-height: 1.6; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; flex-direction: column; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
-        .container { background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); width: 100%; max-width: 700px; margin-bottom: 20px; }
-        h2 { color: #0056b3; border-bottom: 2px solid #e9ecef; padding-bottom: 10px; margin-top: 0; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-weight: 600; margin-bottom: 8px; color: #555; }
-        input[type="date"], input[type="number"], select { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 5px; box-sizing: border-box; font-size: 16px; transition: border-color 0.2s; }
-        input[type="date"]:focus, input[type="number"]:focus, select:focus { border-color: #0056b3; outline: none; }
-        button { background-color: #0056b3; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: background-color 0.2s; }
-        button:hover { background-color: #004494; }
-        .result { margin-top: 20px; padding: 15px; background-color: #e9f5ff; border-left: 5px solid #0056b3; border-radius: 5px; font-size: 1.1em; display: none; }
-        .result.error { background-color: #fff0f0; border-left-color: #d9534f; }
-        .back-button { display: inline-block; margin-top: 20px; background-color: #6c757d; color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; transition: background-color 0.2s; }
-        .back-button:hover { background-color: #5a6268; }
-        .info-link { display: none; margin-top: 15px; padding: 10px; background-color: #e6f7ff; border: 1px solid #91d5ff; border-radius: 5px; text-align: center; }
-        #btn-ver-calculo { background: none; border: 1px solid #0056b3; color: #0056b3; font-weight: normal; margin-top: 15px; padding: 8px 15px; display: none; }
-        #btn-ver-calculo:hover { background-color: #e9f5ff; }
-        #explicacao-calculo { display: none; margin-top: 15px; padding: 15px; background-color: #fafafa; border: 1px solid #e0e0e0; border-radius: 5px; font-size: 0.95em; }
-        #explicacao-calculo h4 { margin-top: 0; color: #0056b3; }
-        #explicacao-calculo ul { padding-left: 20px; margin: 0; }
-        #explicacao-calculo li { margin-bottom: 5px; }
-        #explicacao-calculo .ignorado { color: #888; font-style: italic; }
-        footer { text-align: center; font-size: 0.9em; color: #777; margin-top: 20px; line-height: 1.5; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f7f9; color: #333; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background-color: #ffffff; padding: 40px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); text-align: center; width: 100%; max-width: 500px; }
+        h1 { color: #0056b3; margin-top: 0; margin-bottom: 30px; }
+        .menu-button { display: block; background-color: #0056b3; color: white; padding: 15px 20px; margin: 15px 0; border: none; border-radius: 5px; cursor: pointer; font-size: 18px; text-decoration: none; width: 100%; box-sizing: border-box; transition: background-color 0.2s, transform 0.1s; }
+        .menu-button:hover { background-color: #004494; transform: translateY(-2px); }
+        .menu-button.disabled { background-color: #a9cce3; cursor: not-allowed; }
+        .menu-button.disabled:hover { background-color: #a9cce3; transform: none; }
+        footer { text-align: center; font-size: 0.9em; color: #777; margin-top: 30px; line-height: 1.5; }
         footer a { color: #0056b3; text-decoration: none; }
         footer a:hover { text-decoration: underline; }
+
+        /* Estilos do Modal "Em Construção" */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
         .modal-content { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); text-align: center; max-width: 450px; width: 90%; z-index: 1001; }
-        .modal-content h3 { margin-top: 0; color: #0056b3; }
+        .modal-content h3 { margin-top: 0; color: #e67e22; }
         .modal-content p { margin-bottom: 25px; color: #555; }
-        .modal-buttons { display: flex; justify-content: flex-end; gap: 10px; }
-        .modal-button { padding: 10px 20px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; transition: background-color 0.2s; }
-        #modal-confirm { background-color: #0056b3; color: white; }
-        #modal-confirm:hover { background-color: #004494; }
-        #modal-cancel { background-color: #6c757d; color: white; }
-        #modal-cancel:hover { background-color: #5a6268; }
+        .modal-buttons { display: flex; flex-direction: column; gap: 10px; }
+        .modal-button { padding: 12px 20px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; text-decoration: none; transition: background-color 0.2s; }
+        #modal-redirect { background-color: #0056b3; color: white; }
+        #modal-redirect:hover { background-color: #004494; }
+        #modal-close { background-color: #6c757d; color: white; }
+        #modal-close:hover { background-color: #5a6268; }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
     <div class="container">
-        <h2>Diário de Justiça Eletrônico Nacional (DJEN)</h2>
-        <form id="form-djen">
-            <div class="form-group">
-                <label for="djen-data-disponibilizacao">Data da Disponibilização no Sistema:</label>
-                <input type="date" id="djen-data-disponibilizacao" required>
-            </div>
-            <div class="form-group">
-                <label for="djen-prazo-dias">Prazo em dias úteis:</label>
-                <input type="number" id="djen-prazo-dias" min="1" placeholder="Ex: 15" required>
-            </div>
-            <div class="form-group">
-                <label for="estado-uf">Estado (para feriados locais):</label>
-                <select id="estado-uf">
-                    <option value="">Nenhum (apenas feriados nacionais)</option>
-                    <option value="AC">Acre</option><option value="AL">Alagoas</option><option value="AP">Amapá</option><option value="AM">Amazonas</option><option value="BA">Bahia</option><option value="CE">Ceará</option><option value="DF">Distrito Federal</option><option value="ES">Espírito Santo</option><option value="GO">Goiás</option><option value="MA" selected>Maranhão</option><option value="MT">Mato Grosso</option><option value="MS">Mato Grosso do Sul</option><option value="MG">Minas Gerais</option><option value="PA">Pará</option><option value="PB">Paraíba</option><option value="PR">Paraná</option><option value="PE">Pernambuco</option><option value="PI">Piauí</option><option value="RJ">Rio de Janeiro</option><option value="RN">Rio Grande do Norte</option><option value="RS">Rio Grande do Sul</option><option value="RO">Rondônia</option><option value="RR">Roraima</option><option value="SC">Santa Catarina</option><option value="SP">São Paulo</option><option value="SE">Sergipe</option><option value="TO">Tocantins</option>
-                </select>
-            </div>
-            <button type="submit">Calcular Prazo</button>
-        </form>
-        <div id="resultado-djen" class="result"></div>
-        <button id="btn-ver-calculo">Ver detalhes do cálculo</button>
-        <div id="explicacao-calculo"></div>
-        <div id="link-tjma-djen" class="info-link"></div>
-        <a href="index.html" class="back-button">↩ Voltar</a>
+        <h1>Calculadoras Jurídicas</h1>
+        <a href="djen.html" class="menu-button">Diário de Justiça Eletrônico Nacional (DJEN)</a>
+        <button id="btn-domicilio" class="menu-button disabled">Domicílio Judicial Eletrônico</button>
+        
+        <footer>
+            Copyright &copy; 2025 Mateus Maia | 
+            <a href="https://www.instagram.com/mateusmaiaadv/" target="_blank" rel="noopener noreferrer">Instagram</a> | 
+            <a href="https://tinyurl.com/4d5xe7hb" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        </footer>
     </div>
 
-    <div id="modal-disclaimer" class="modal-overlay">
+    <!-- Estrutura do Modal "Em Construção" -->
+    <div id="modal-construcao" class="modal-overlay">
         <div class="modal-content">
-            <h3>Atenção</h3>
-            <p>Esta calculadora é uma ferramenta de auxílio e pode conter imprecisões. Feriados locais (municipais) não são considerados. Verifique sempre o calendário oficial do tribunal correspondente antes de confiar no resultado.</p>
+            <h3>Em Construção</h3>
+            <p>Esta funcionalidade ainda está em desenvolvimento. Por favor, aguarde.</p>
+            <p>Se adequado, utilize a calculadora para o <strong>DJEN</strong>, que já está disponível.</p>
             <div class="modal-buttons">
-                <button id="modal-cancel" class="modal-button">Cancelar</button>
-                <button id="modal-confirm" class="modal-button">Continuar</button>
+                <a href="djen.html" id="modal-redirect" class="modal-button">Ir para Calculadora DJEN</a>
+                <button id="modal-close" class="modal-button">Fechar</button>
             </div>
         </div>
     </div>
 
-    <footer>
-        Copyright &copy; 2025 Mateus Maia | 
-        <a href="https://www.instagram.com/mateusmaiaadv/" target="_blank" rel="noopener noreferrer">Instagram</a> | 
-        <a href="https://tinyurl.com/4d5xe7hb" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-    </footer>
-
     <script>
-        // --- SCRIPT DE PROTEÇÃO ---
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || (e.ctrlKey && e.key === 'S') || (e.ctrlKey && e.key === 'U')) {
-                e.preventDefault();
-            }
-        });
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnDomicilio = document.getElementById('btn-domicilio');
+            const modal = document.getElementById('modal-construcao');
+            const btnClose = document.getElementById('modal-close');
 
-        // --- LÓGICA DA CALCULADORA OFUSCADA ---
-        (function(_0x3e81e8,_0x38211e){const _0x4bf443=_0x2427,_0x57c663=_0x3e81e8();while(!![]){try{const _0x40a73c=-parseInt(_0x4bf443(0x17a))/0x1*(-parseInt(_0x4bf443(0x15a))/0x2)+parseInt(_0x4bf443(0x14f))/0x3*(-parseInt(_0x4bf443(0x158))/0x4)+parseInt(_0x4bf443(0x162))/0x5+-parseInt(_0x4bf443(0x13d))/0x6*(-parseInt(_0x4bf443(0x16c))/0x7)+-parseInt(_0x4bf443(0x15e))/0x8*(-parseInt(_0x4bf443(0x16d))/0x9)+parseInt(_0x4bf443(0x15c))/0xa+-parseInt(_0x4bf443(0x16b))/0xb;if(_0x40a73c===_0x38211e)break;else _0x57c663['push'](_0x57c663['shift']());}catch(_0x3907a1){_0x57c663['push'](_0x57c663['shift']());}}}(_0x3a4f,0x9a513));function _0x2427(_0x43e5d8,_0x1da7a7){const _0x3a4f3a=_0x3a4f();return _0x2427=function(_0x2427d3,_0x3d141f){_0x2427d3=_0x2427d3-0x13c;let _0x484272=_0x3a4f3a[_0x2427d3];return _0x484272;},_0x2427(_0x43e5d8,_0x1da7a7);}document['addEventListener'](_0x2427(0x168),()=>{const _0x19636e=_0x2427,_0x546b5f=[_0x19636e(0x174),_0x19636e(0x175),_0x19636e(0x176),_0x19636e(0x177),_0x19636e(0x178),_0x19636e(0x179),_0x19636e(0x17b),_0x19636e(0x17c),_0x19636e(0x17d),_0x19636e(0x17e),_0x19636e(0x17f),_0x19636e(0x180),_0x19636e(0x181),_0x19636e(0x182)],_0x1f2115=[_0x19636e(0x183),_0x19636e(0x184),_0x19636e(0x185),_0x19636e(0x186),_0x19636e(0x187),_0x19636e(0x188)],_0x45a23f=(_0x1d15ac,_0x543321)=>{const _0x59723c=_0x19636e,_0x24405e=[],_0x5d9880=new Date(_0x1d15ac[_0x59723c(0x15b)]()+_0x1d15ac[_0x59723c(0x167)]()*0x3c*0x3e8),_0x501861=new Date(_0x543321[_0x59723c(0x15b)]()+_0x543321['getTimezoneOffset']()*0x3c*0x3e8);while(_0x5d9880<=_0x501861)_0x24405e['push'](_0x5d9880[_0x59723c(0x14a)]()[_0x59723c(0x159)]('T')[0x0]),_0x5d9880[_0x59723c(0x149)](_0x5d9880['getDate']()+0x1);return _0x24405e;},_0x22488c=_0x45a23f(new Date(_0x19636e(0x189)),new Date(_0x19636e(0x18a)));async function _0x59311a(_0x2055e8,_0x45446d){const _0x4c7282=_0x19636e;let _0x4751d0=_0x2055e8===0x7e9?[..._0x546b5f]:[];if(_0x45446d===_0x4c7282(0x14e)&&_0x2055e8===0x7e9)_0x4751d0=_0x4751d0[_0x4c7282(0x16f)](_0x1f2115,_0x22488c);else{if(_0x45446d)try{const _0x437602=await fetch(_0x4c7282(0x150)+_0x2055e8+_0x4c7282(0x151)+_0x45446d);if(_0x437602['ok']){const _0x4e543a=await _0x437602['json']();_0x4751d0=_0x4751d0[_0x4c7282(0x16f)](_0x4e543a['map'](_0x55b08e=>_0x55b08e['date']));}}catch(_0x54a7f1){console['error'](_0x4c7282(0x152),_0x54a7f1),alert(_0x4c7282(0x153));}}return[...new Set(_0x4751d0)];}const _0x478e6a=[_0x19636e(0x154),_0x19636e(0x155),_0x19636e(0x156),_0x19636e(0x157),_0x19636e(0x16e),_0x19636e(0x170),_0x19636e(0x171)],_0x191899=(_0x18c80c,_0x238263)=>{const _0x103442=_0x19636e;return _0x238263['includes'](_0x18c80c)?_0x103442(0x172):_0x103442(0x173);},_0x48590c=(_0x14102c,_0x54a9d7)=>{const _0x597a1c=_0x19636e,_0x452381=_0x14102c['getDay']();if(_0x452381===0x0||_0x452381===0x6)return![];const _0x58244c=_0x14102c[_0x597a1c(0x14a)]()[_0x597a1c(0x159)]('T')[0x0];return!_0x54a9d7[_0x597a1c(0x166)](_0x58244c);},_0x138a60=(_0x1e7e4c,_0x4338b7)=>{const _0x5989d9=_0x19636e,_0x597721=new Date(_0x1e7e4c);_0x597721[_0x5989d9(0x149)](_0x597721[_0x5989d9(0x148)]()+0x1);while(!_0x48590c(_0x597721,_0x4338b7))_0x597721[_0x5989d9(0x149)](_0x597721[_0x5989d9(0x148)]()+0x1);return _0x597721;},_0x452606=_0x2b0138=>{const _0x418602=_0x19636e,_0x54619a=new Date(_0x2b0138[_0x418602(0x15b)]()+_0x2b0138[_0x418602(0x167)]()*0x3c*0x3e8);return _0x54619a[_0x418602(0x169)]('pt-BR');},_0x438a6b=_0x593e18=>{const _0x55801a=_0x19636e,_0x48507c=new Date(_0x593e18[_0x55801a(0x15b)]()+_0x593e18[_0x55801a(0x167)]()*0x3c*0x3e8);return''+_0x48507c[_0x55801a(0x169)]('pt-BR')+' ('+_0x478e6a[_0x48507c['getDay']()]+')';},_0x159a2a=(_0x186a4c,_0x4b7f8c,_0x2b7f9e)=>{const _0x43a22f=_0x19636e;let _0x589b9a=[],_0x56a8a2=new Date(_0x186a4c),_0x599b2e=0x0,_0x2b8b30=0x0;_0x2b8b30++;let _0x4e044a='<li>'+_0x438a6b(_0x56a8a2)+_0x43a22f(0x13e)+_0x2b8b30+'</strong>';_0x2b8b30===_0x4b7f8c&&(_0x4e044a+=_0x43a22f(0x13f)),_0x4e044a+='</li>',_0x589b9a['push'](_0x4e044a);while(_0x2b8b30<_0x4b7f8c){_0x56a8a2[_0x43a22f(0x149)](_0x56a8a2[_0x43a22f(0x148)]()+0x1);const _0x587a89=_0x56a8a2[_0x43a22f(0x14a)]()[_0x43a22f(0x159)]('T')[0x0];if(_0x48590c(_0x56a8a2,_0x2b7f9e)){_0x2b8b30++;let _0x1398a3='<li>'+_0x438a6b(_0x56a8a2)+_0x43a22f(0x13e)+_0x2b8b30+'</strong>';_0x2b8b30===_0x4b7f8c&&(_0x1398a3+=_0x43a22f(0x13f)),_0x1398a3+='</li>',_0x589b9a['push'](_0x1398a3);}else _0x589b9a['push']('<li class=\"ignorado\">'+_0x438a6b(_0x56a8a2)+_0x43a22f(0x140)+_0x191899(_0x587a89,_0x2b7f9e)+')</em></li>');}return{'finalDate':_0x56a8a2,'log':_0x589b9a};};const _0x4682d3=document[_0x19636e(0x141)](_0x19636e(0x142)),_0x59b85c=document[_0x19636e(0x141)](_0x19636e(0x143)),_0x53644e=document[_0x19636e(0x141)](_0x19636e(0x144)),_0x437501=document[_0x19636e(0x141)](_0x19636e(0x145)),_0x5994f1=document[_0x19636e(0x141)](_0x19636e(0x146)),_0x549666=document[_0x19636e(0x141)](_0x19636e(0x147)),_0x398a40=document[_0x19636e(0x141)](_0x19636e(0x15f)),_0x3f1206=document[_0x19636e(0x141)](_0x19636e(0x160));_0x59b85c['onclick']=()=>{const _0x43521d=_0x19636e;_0x4682d3[_0x43521d(0x161)][_0x43521d(0x163)]='none';},_0x53644e['onclick']=()=>{const _0x47317c=_0x19636e;_0x4682d3[_0x47317c(0x161)][_0x47317c(0x163)]=_0x47317c(0x164),_0x49d10a();},_0x437501[_0x19636e(0x165)](_0x19636e(0x16a),_0x45231c=>{const _0x22641d=_0x19636e;_0x45231c[_0x22641d(0x14b)](),_0x4682d3[_0x22641d(0x161)][_0x22641d(0x163)]='flex';}),_0x398a40[_0x19636e(0x165)](_0x19636e(0x14c),()=>{const _0x114382=_0x19636e,_0x58248c=_0x3f1206[_0x114382(0x161)][_0x114382(0x163)]===_0x114382(0x14d);_0x3f1206[_0x114382(0x161)][_0x114382(0x163)]=_0x58248c?_0x114382(0x164):_0x114382(0x14d),_0x398a40[_0x114382(0x15d)]=_0x58248c?_0x114382(0x160):_0x114382(0x159);});async function _0x49d10a(){const _0x54619a=_0x19636e,_0x32824a=document[_0x54619a(0x141)](_0x54619a(0x13c))['value'],_0x543321=parseInt(document[_0x54619a(0x141)](_0x54619a(0x153))['value'],0xa),_0x5d9880=document[_0x54619a(0x141)](_0x54619a(0x154))['value'];if(!_0x32824a||!_0x543321){_0x5994f1['innerHTML']=_0x54619a(0x155),_0x5994f1['className']=_0x54619a(0x156),_0x5994f1[_0x54619a(0x161)][_0x54619a(0x163)]=_0x54619a(0x14d),_0x549666[_0x54619a(0x161)][_0x54619a(0x163)]=_0x54619a(0x164),_0x398a40[_0x54619a(0x161)][_0x54619a(0x163)]=_0x54619a(0x164),_0x3f1206[_0x54619a(0x161)][_0x54619a(0x163)]=_0x54619a(0x164);return;}const _0x501861=new Date(''+_0x32824a+'T12:00:00'),_0x24405e=_0x501861[_0x54619a(0x157)](),_0x5d9880=await _0x59311a(_0x24405e,_0x5d9880),_0x501861=_0x138a60(_0x501861,_0x5d9880),_0x24405e=_0x138a60(_0x501861,_0x5d9880),_0x5d9880=_0x159a2a(_0x24405e,_0x543321,_0x5d9880),_0x501861=_0x5d9880['finalDate'];_0x5994f1[_0x54619a(0x158)]=_0x54619a(0x159)+_0x452606(_0x501861)+_0x54619a(0x15a)+_0x452606(_0x24405e)+_0x54619a(0x15c)+_0x452606(_0x501861),_0x5994f1['className']=_0x54619a(0x15d),_0x5994f1[_0x54619a(0x161)][_0x54619a(0x163)]=_0x54619a(0x14d);let _0x24405e=_0x54619a(0x15e)+_0x54619a(0x15f)+_0x438a6b(_0x501861)+_0x54619a(0x160)+_0x438a6b(_0x501861)+_0x54619a(0x161)+_0x438a6b(_0x24405e)+_0x54619a(0x162)+_0x54619a(0x163)+_0x543321+_0x54619a(0x164)+_0x54619a(0x165)+_0x5d9880['log'][_0x54619a(0x166)]('')+'</ul>';_0x3f1206[_0x54619a(0x158)]=_0x24405e,_0x398a40[_0x54619a(0x161)][_0x54619a(0x163)]=_0x54619a(0x14d),_0x398a40[_0x54619a(0x15d)]=_0x54619a(0x160),_0x3f1206[_0x54619a(0x161)][_0x54619a(0x163)]=_0x54619a(0x164);if(_0x5d9880===_0x54619a(0x14e))_0x549666[_0x54619a(0x158)]=_0x54619a(0x167),_0x549666[_0x54619a(0x161)][_0x54619a(0x163)]=_0x54619a(0x14d);else _0x549666[_0x54619a(0x161)][_0x54619a(0x163)]=_0x54619a(0x164);}}});function _0x3a4f(){const _0x4c7282=['getFullYear','innerHTML','split','<br><strong>Início do Prazo:</strong> ','valueOf','<br><strong>Fim do Prazo:</strong> ','textContent','<h4>Detalhes do Cálculo</h4>','<li><strong>Data de Disponibilização:</strong> ','explicacao-calculo','style','</li><li><strong>Data da Publicação:</strong> ','display','none','addEventListener','includes','getTimezoneOffset','DOMContentLoaded','toLocaleDateString','submit','2953233rXJqgU','click','block','MA','3339033lQYqgV','https://brasilapi.com.br/api/feriados/v1/','?state=','Erro ao buscar feriados estaduais:','djen-prazo-dias','Domingo','Segunda-feira','Terça-feira','Quarta-feira','4XGZtqf','Ocultar detalhes do cálculo','2sZgGqf','Quinta-feira','Sexta-feira','Feriado/Recesso','Fim de semana','2025-01-01','2025-03-03','2025-03-04','2025-03-05','2025-04-18','2025-04-21','114488bYtYhL','2025-04-21','2025-05-01','2025-06-19','2025-09-07','2025-10-12','2025-11-02','2025-11-15','2025-11-20','2025-12-25','2025-07-28','2025-10-15','2025-10-28','2025-12-08','2025-12-24','2025-12-31','2025-12-20','2026-01-20',' - <strong>Dia ',' <strong>(Fim do Prazo)</strong>',' - <em>Ignorado (','getElementById','modal-disclaimer','modal-cancel','modal-confirm','form-djen','resultado-djen','link-tjma-djen','getDate','setDate','toISOString','preventDefault','djen-data-disponibilizacao','Aviso: Não foi possível carregar feriados estaduais.','estado-uf','Por favor, preencha todos os campos.','result error','concat',' - <em>1º dia útil após disponibilização.</em></li>',' - <em>1º dia útil após publicação.</em></li></ul>','<p><strong>Contagem dos ',' dias úteis:</strong></p>','<ul>','join','Cálculo baseado nos feriados do TJMA. <a href=\"https://mateusmaiaadvocacia.blogspot.com/2025/01/feriados-e-pontos-facultativos-do-poder.html\" target=\"_blank\" rel=\"noopener noreferrer\">Consulte o calendário detalhado aqui</a>.','11228499XQYQvY','14580324YxYgqR','1442728gZJgqX','11781033rYqgqX','result','1664888jZJgqX','btn-ver-calculo','Ver detalhes do cálculo','<li><strong>Início do Prazo:</strong> ','1355555ZJgqX','flex','<strong>Data da Publicação (considerada):</strong> '];_0x3a4f=function(){return _0x4c7282;};return _0x3a4f();}
+            // Abre o modal ao clicar no botão "Domicílio"
+            btnDomicilio.addEventListener('click', (e) => {
+                e.preventDefault(); // Previne qualquer comportamento padrão do botão
+                modal.style.display = 'flex';
+            });
+
+            // Fecha o modal ao clicar no botão "Fechar"
+            btnClose.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+
+            // Fecha o modal ao clicar fora da caixa de diálogo
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
     </script>
 </body>
 </html>
